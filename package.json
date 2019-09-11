@@ -1,0 +1,33 @@
+{
+  "name": "node-solr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.ts",
+  "scripts": {
+    "start": "npm run build:live",
+    "build": "tsc -p .",
+    "build:live": "nodemon --watch src/**/*.ts --exec ts-node src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^12.7.2",
+    "nodemon": "^1.19.1",
+    "ts-express": "^1.0.3",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/bluebird": "^3.5.27",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.1",
+    "@types/solr-client": "^0.7.3",
+    "@types/validator": "^10.11.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "solr-client": "^0.7.1"
+  }
+}
