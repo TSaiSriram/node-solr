@@ -1,7 +1,7 @@
 # creates a layer from the node:carbon Docker image
 FROM node:latest
 # create the app directory for inside the Docker image
-WORKDIR /build
+WORKDIR /build/app
 # copy and install app dependencies from the package.json (and the package-lock.json) into the root of the directory created above
 COPY package*.json ./
 RUN npm install

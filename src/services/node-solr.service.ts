@@ -1,6 +1,6 @@
 import * as solr from 'solr-client';
 import * as config from '../config';
-import { Request, Response, Router } from 'express';
+import { solrData } from '../interfaces/solrData.interface';
 
 var client = solr.createClient({
     host: config.SOLR_HOST,
@@ -9,101 +9,64 @@ var client = solr.createClient({
 });
 
 
-const createSolrData = (createdData: any) => {
-    try {
-        // var createdData: any = {
-        //     "id": "MA147LL/A",
-        //     "name": "Apple 60 GB iPod with Video Playback Black",
-        //     "manu": "Apple Computer Inc.",
-        //     "manu_id_s": "apple",
-        //     "cat": ["electronics",
-        //         "music"],
-        //     "price_c____l_ns": 39900
-        // }
-        let response: any = { status: true };
+const createSolrData = (createdData: solrData[]) => {
+    return new Promise((resolve, reject) => {
         client.add(createdData, undefined, (err: any, obj: any) => {
-            var data: any = [];
             if (err) {
-                console.log(err);
-                return;
+                reject({ status: false, error: err })
+            } else {
+                resolve({ status: true, data: obj })
             }
-            else
-                return
         });
-
-        return response;
-
-    } catch (error) {
-        return { status: false, message: error }
-    }
+    });
 };
 
 const getSolrData = async () => {
-    try {
+    return new Promise((resolve, reject) => {
         // search document using strQuery
         var query = client.query()
-            .q('electronics').start(0)
-            .rows(2);
+            .q('*:*').start(0)
+            .rows(25).sort({ id: 'asc' });
 
-        let data: any;
-
-        client.search(query, (err: Error, obj: Object) => {
+        client.search(query, async (err: Error, obj: any) => {
             if (err) {
-                console.log(err);
-            } else
-                data = JSON.stringify(obj)
+                reject({ status: false, error: err })
+            } else {
+                resolve({ status: true, data: obj.response["docs"] })
+            }
         });
-        return { status: true, data }
-    } catch (error) {
-        return { status: false, message: error }
-    }
+    })
 };
 
 const updateSolrData = async (updateData: any) => {
-    // Update document to Solr server
-    try {
-
-        // var updateData: any = {
-        //     id: "MA147LL/A",
-        //     manu: "Apple Inc.",
-        //     manu_id_s: "Apple",
-        // };
-
+    return new Promise((resolve, reject) => {
         let data: any;
-
-
         client.add(updateData, undefined, (err, result: any) => {
             if (err) {
-                console.log(err);
+                reject({ status: false, error: err })
                 return;
             }
-            else result.responseHeader
+            else data = result.responseHeader
         })
-        return { status: true, message: "sucessfully Updated", response: data };
-    } catch (error) {
-        return { status: false, message: error }
-    }
+        resolve({ status: true, message: "sucessfully Updated", response: data });
+    })
 };
 
 const deleteSolrData = async (req: any) => {
-    try {
 
+    return new Promise((resolve, reject) => {
         // Delete document using strQuery
         let data: any;
         client.delete('id', req.query.id, undefined, (err, result: any) => {
             if (err) {
-                console.log("delete error", err);
+                reject({ status: false, error: err })
                 return;
             }
-            else data = result.responseHeader;
+            else data = result.responseHeader
+        })
+        resolve({ status: true, message: "sucessfully deleted", response: data });
 
-        });
-
-        return { status: true, message: "sucessfully deleted", response: data };
-
-    } catch (error) {
-        return { status: false, message: error }
-    }
+    });
 
 };
 
