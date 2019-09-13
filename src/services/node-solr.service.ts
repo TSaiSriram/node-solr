@@ -21,6 +21,8 @@ const createSolrData = (createdData: solrData[]) => {
     });
 };
 
+
+
 const getSolrData = async () => {
     return new Promise((resolve, reject) => {
         // search document using strQuery
