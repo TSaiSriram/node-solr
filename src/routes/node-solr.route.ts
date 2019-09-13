@@ -16,6 +16,13 @@ router.get('/getSolrData', async (req: Request, res: Response) => {
     return res.status(200).send(getSolrData);
 });
 
+router.get('/getSolrDataByID', async (req: Request, res: Response) => {
+    const getSolrDataByID: any = await solrService.getSolrDataByID(req);
+    if (!getSolrDataByID.status) return res.status(400).send(getSolrDataByID);
+    return res.status(200).send(getSolrDataByID);
+});
+
+
 router.put('/updateSolrData/', async (req: Request, res: Response) => {
     const updateSolrData: any = await solrService.updateSolrData(req.body)
     if (!updateSolrData.status) return res.status(400).send(updateSolrData);
@@ -31,3 +38,5 @@ router.delete('/deleteSolrData', async (req: Request, res: Response) => {
 
 
 export default router;
+
+

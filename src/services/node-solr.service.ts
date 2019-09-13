@@ -2,7 +2,7 @@ import * as solr from 'solr-client';
 import * as config from '../config';
 import { solrData } from '../interfaces/solrData.interface';
 
-var client = solr.createClient({
+const client = solr.createClient({
     host: config.SOLR_HOST,
     port: config.SOLR_PORT,
     core: config.SOLR_CORE
@@ -26,7 +26,7 @@ const createSolrData = (createdData: solrData[]) => {
 const getSolrData = async () => {
     return new Promise((resolve, reject) => {
         // search document using strQuery
-        var query = client.query()
+        const query = client.query()
             .q('*:*').start(0)
             .rows(25).sort({ id: 'asc' });
 
@@ -40,17 +40,35 @@ const getSolrData = async () => {
     })
 };
 
+const getSolrDataByID = async (req: any) => {
+    return new Promise((resolve, reject) => {
+        // search document using strQuery
+        const queryID = 'id' + '=' + req.query.id;
+        const query = client.query()
+            .q(queryID).start(0);
+
+        client.search(query, async (err: Error, obj: any) => {
+            if (err) {
+                reject({ status: false, error: err })
+            } else {
+                resolve({ status: true, data: obj.response["docs"] })
+            }
+        });
+    })
+};
+
 const updateSolrData = async (updateData: any) => {
     return new Promise((resolve, reject) => {
-        let data: any;
+       
         client.add(updateData, undefined, (err, result: any) => {
             if (err) {
                 reject({ status: false, error: err })
                 return;
             }
-            else data = result.responseHeader
+            else
+                resolve({ status: true, message: "sucessfully Updated", response: result.responseHeader });
         })
-        resolve({ status: true, message: "sucessfully Updated", response: data });
+
     })
 };
 
@@ -64,13 +82,14 @@ const deleteSolrData = async (req: any) => {
                 reject({ status: false, error: err })
                 return;
             }
-            else data = result.responseHeader
+            else
+                resolve({ status: true, message: "sucessfully deleted", response: result.responseHeader });
         })
-        resolve({ status: true, message: "sucessfully deleted", response: data });
+
 
     });
 
 };
 
-export default { getSolrData, createSolrData, updateSolrData, deleteSolrData }
+export default { getSolrData, createSolrData, updateSolrData, deleteSolrData, getSolrDataByID }
 
