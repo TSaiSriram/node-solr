@@ -43,9 +43,9 @@ const getSolrData = async () => {
 const getSolrDataByID = async (req: any) => {
     return new Promise((resolve, reject) => {
         // search document using strQuery
-        const queryID = 'id' + '=' + req.query.id;
+        console.log(req.query)
         const query = client.query()
-            .q(queryID).start(0);
+            .q("*:*").start(0).matchFilter("id", req.query.id);
 
         client.search(query, async (err: Error, obj: any) => {
             if (err) {
@@ -59,7 +59,7 @@ const getSolrDataByID = async (req: any) => {
 
 const updateSolrData = async (updateData: any) => {
     return new Promise((resolve, reject) => {
-       
+
         client.add(updateData, undefined, (err, result: any) => {
             if (err) {
                 reject({ status: false, error: err })
