@@ -2,11 +2,7 @@ import * as solr from 'solr-client';
 import * as config from '../config';
 import { solrData } from '../interfaces/solrData.interface';
 
-const client = solr.createClient({
-    host: config.SOLR_HOST,
-    port: config.SOLR_PORT,
-    core: config.SOLR_CORE
-});
+const client = solr.createClient({ host: config.SOLR_HOST, port: config.SOLR_PORT, core: config.SOLR_CORE });
 
 
 const createSolrData = (createdData: solrData[]) => {
@@ -43,9 +39,10 @@ const getSolrData = async () => {
 const getSolrDataByID = async (req: any) => {
     return new Promise((resolve, reject) => {
         // search document using strQuery
-        console.log(req.query)
+        const id = Object.keys(req.query)[0];
+        console.log(id, req.query[id])
         const query = client.query()
-            .q("*:*").start(0).matchFilter("id", req.query.id);
+            .q("*:*").start(0).matchFilter(Object.keys(req.query)[0], req.query[Object.keys(req.query)[0]]);
 
         client.search(query, async (err: Error, obj: any) => {
             if (err) {
@@ -59,10 +56,9 @@ const getSolrDataByID = async (req: any) => {
 
 const updateSolrData = async (updateData: any) => {
     return new Promise((resolve, reject) => {
-
-        client.add(updateData, undefined, (err, result: any) => {
-            if (err) {
-                reject({ status: false, error: err })
+        client.update(updateData, undefined, (errorMessage: any, result: any) => {
+            if (errorMessage) {
+                reject({ status: false, errorMessage })
                 return;
             }
             else
